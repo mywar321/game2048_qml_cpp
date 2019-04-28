@@ -1,60 +1,201 @@
 ﻿#include "gamecontroller.h"
 #include "tilemodel.h"
+#include <QRandomGenerator>
 #include <QDebug>
 GameController::GameController(QObject *parent) : QObject(parent)
 {
-    for (int i=0;i<16;i++) {
-        m_tiles.append(new TileModel(i/4,i%4,i+1));
-    }
-}
 
-QQmlListProperty<TileModel> GameController::tileList()
-{
-    return QQmlListProperty<TileModel>(this,nullptr,
-                                       GameController::append_tile,
-                                       GameController::count_tile,
-                                       GameController::at_tile,
-                                       GameController::clear_tile);
 }
 
 void GameController::moveLeft()
-{
-    m_tiles.at(0)->setValue(9);
+{//TODO： 考虑边界问题
+    clearFlag();
+    for (int i=0;i<4;i++) {
+        for (int j=1;j<4;j++) {
+            int k = j;
+            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
+            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
+                if (m_tiles[i][k-1]->isBlank()) {
+                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+                }
+                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
+                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+                    break;
+                }
+                else {
+                    break;
+                }
+                k--;
+            }
+        }
+    }
+    newTile();
 
-    emit generateNew(3);
+
 }
 
-void GameController::generateNewTile()
+void GameController::moveRight()
 {
-    m_tiles.at(3)->setValue(0);
+    clearFlag();
+    for (int i=0;i<4;i++) {
+        for (int j=2;j>-1;j--) {
+            int k = j;
 
-    emit generateNew(3);
+            while (k < 3 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k+1]->isMerged()) {
+                if (m_tiles[i][k+1]->isBlank()) {
+                    moveTile(m_tiles[i][k], m_tiles[i][k+1]);
+                }
+                else if (m_tiles[i][k+1]->value() == m_tiles[i][k]->value()) {
+                    mergeTile(m_tiles[i][k],m_tiles[i][k+1]);
+                    break;
+                }
+                else {
+                    break;
+                }
+                k++;
+            }
+        }
+    }
+    newTile();
 }
 
-void GameController::append_tile(QQmlListProperty<TileModel> *list, TileModel *tile)
+void GameController::moveUp()
 {
-    GameController *controller = qobject_cast<GameController *>(list->object);
-    if (tile != nullptr)
-        controller->m_tiles.append(tile);
+    clearFlag();
+    for (int i=0;i<4;i++) {
+        for (int j=1;j<4;j++) {
+            int k = j;
+            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
+            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
+                if (m_tiles[i][k-1]->isBlank()) {
+                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+                }
+                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
+                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+                    break;
+                }
+                else {
+                    break;
+                }
+                k--;
+            }
+        }
+    }
+    newTile();
 }
 
-int GameController::count_tile(QQmlListProperty<TileModel> *list)
+void GameController::moveDown()
 {
-    GameController *controller = qobject_cast<GameController *>(list->object);
-    return  controller->m_tiles.count();
+    clearFlag();
+    for (int i=0;i<4;i++) {
+        for (int j=1;j<4;j++) {
+            int k = j;
+            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
+            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
+                if (m_tiles[i][k-1]->isBlank()) {
+                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+                }
+                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
+                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+                    break;
+                }
+                else {
+                    break;
+                }
+                k--;
+            }
+        }
+    }
+    newTile();
 }
 
-TileModel* GameController::at_tile(QQmlListProperty<TileModel> *list, int i)
+void GameController::gameStart()
 {
-    GameController *controller = qobject_cast<GameController *>(list->object);
-    return controller->m_tiles.at(i);
+    initTiles();
+    newTile();
+    newTile();
 }
 
-void GameController::clear_tile(QQmlListProperty<TileModel> *list)
+void GameController::initTiles()
 {
-    GameController *controller = qobject_cast<GameController *>(list->object);
-    controller->m_tiles.clear();
+
+    for (int i=0;i<4;i++) {
+        QVector<TileModel *> tempV;
+        for (int j=0;j<4;j++) {
+            tempV.append(new TileModel(i,j,0));
+        }
+        m_tiles.append(tempV);
+    }
 }
+
+bool GameController::isGameOver()
+{
+    for (int i=0;i<4;i++) {
+        for (int j=0;j<4;j++) {
+            if (m_tiles[i][j]->value() == 0)
+                return false;
+            if (i > 0 &&
+                    m_tiles[i-1][j]->value() == m_tiles[i][j]->value())
+                return false;
+            if (j > 0 &&
+                    m_tiles[i][j-1]->value() == m_tiles[i][j]->value())
+                return false;
+        }
+    }
+    return true;
+}
+
+void GameController::newTile()
+{
+    if (isGameOver()) {
+        emit gameIsOver();
+        return;
+    }
+    QVector<TileModel *>  zeros;
+    for (int i=0;i<4;i++) {
+        for (int j=0;j<4;j++) {
+            if (m_tiles[i][j]->value() == 0) {
+                zeros.append(m_tiles[i][j]);
+            }
+        }
+    }
+    if (zeros.size() == 0)
+        return;
+
+    int new_i = QRandomGenerator::global()->bounded(0,zeros.size()-1);
+    int new_value = (QRandomGenerator::global()->bounded(1,100) < 90) ? 1 : 2;  // 新格子数值2和4的概率 9比1
+    zeros[new_i]->setValue(new_value);
+    emit generateNewTile(zeros[new_i]->x(),
+                         zeros[new_i]->y(),
+                         zeros[new_i]->value());
+
+}
+
+void GameController::mergeTile(TileModel *a, TileModel *b) //a融合到b
+{
+    b->setValue(b->value()+1);
+    a->setValue(0);
+    b->setIsMerged(true);
+    emit moveAndMerge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
+}
+
+void GameController::moveTile(TileModel *a, TileModel *b) //a移动到b
+{
+    b->setValue(a->value());
+    b->setIsMerged(a->isMerged());
+    a->setValue(0);
+    a->setIsMerged(false);
+    emit moveAndMerge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
+}
+
+void GameController::clearFlag()
+{
+    for (int i=0;i<4;i++)
+        for (int j=0;j<4;j++)
+            m_tiles[i][j]->setIsMerged(false);
+}
+
+
 
 
 

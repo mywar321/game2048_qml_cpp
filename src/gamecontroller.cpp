@@ -13,20 +13,39 @@ void GameController::moveLeft()
     for (int i=0;i<4;i++) {
         for (int j=1;j<4;j++) {
             int k = j;
-            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
-            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
-                if (m_tiles[i][k-1]->isBlank()) {
-                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
-                }
-                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
-                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
-                    break;
-                }
-                else {
-                    break;
-                }
+            //向左找寻
+            //对非空tile,寻找非0的不同tile，移动到前一个位置,根据此位置的数值决定是移动还是合并
+            if (m_tiles[i][j]->isBlank())
+                continue;
+            while (k >= 0
+                   && !m_tiles[i][k]->isMerged()
+                   && (m_tiles[i][k]->isBlank() || m_tiles[i][k]->value() == m_tiles[i][j]->value()))
+            {
                 k--;
             }
+            k++; //移动到前一个位置
+            if (k == j)
+                continue;
+            if (m_tiles[i][k]->isBlank()) {
+                moveTile(m_tiles[i][j], m_tiles[i][k]);
+            }
+            else {
+                mergeTile(m_tiles[i][j], m_tiles[i][k]);
+            }
+
+//            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
+//                if (m_tiles[i][k-1]->isBlank()) {
+//                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+//                }
+//                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
+//                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+//                    break;
+//                }
+//                else {
+//                    break;
+//                }
+//                k--;
+//            }
         }
     }
     newTile();
@@ -41,18 +60,22 @@ void GameController::moveRight()
         for (int j=2;j>-1;j--) {
             int k = j;
 
-            while (k < 3 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k+1]->isMerged()) {
-                if (m_tiles[i][k+1]->isBlank()) {
-                    moveTile(m_tiles[i][k], m_tiles[i][k+1]);
-                }
-                else if (m_tiles[i][k+1]->value() == m_tiles[i][k]->value()) {
-                    mergeTile(m_tiles[i][k],m_tiles[i][k+1]);
-                    break;
-                }
-                else {
-                    break;
-                }
+            if (m_tiles[i][j]->isBlank())
+                continue;
+            while (k <= 3
+                   && !m_tiles[i][k]->isMerged()
+                   && (m_tiles[i][k]->isBlank() || m_tiles[i][k]->value() == m_tiles[i][j]->value()))
+            {
                 k++;
+            }
+            k--; //移动到前一个位置
+            if (k == j)
+                continue;
+            if (m_tiles[i][k]->isBlank()) {
+                moveTile(m_tiles[i][j], m_tiles[i][k]);
+            }
+            else {
+                mergeTile(m_tiles[i][j], m_tiles[i][k]);
             }
         }
     }
@@ -65,19 +88,23 @@ void GameController::moveUp()
     for (int j=0;j<4;j++) {
         for (int i=1;i<4;i++) {
             int k = i;
-
-            while (k > 0 && !m_tiles[k][j]->isBlank() && !m_tiles[k-1][j]->isMerged()) {
-                if (m_tiles[k-1][j]->isBlank()) {
-                    moveTile(m_tiles[k][j], m_tiles[k-1][j]);
-                }
-                else if (m_tiles[k-1][j]->value() == m_tiles[k][j]->value()) {
-                    mergeTile(m_tiles[k][j], m_tiles[k-1][j]);
-                    break;
-                }
-                else {
-                    break;
-                }
+            //对非空tile,寻找非0的不同tile，移动到前一个位置,根据此位置的数值决定是移动还是合并
+            if (m_tiles[i][j]->isBlank())
+                continue;
+            while (k >= 0
+                   && !m_tiles[k][j]->isMerged()
+                   && (m_tiles[k][j]->isBlank() || m_tiles[k][j]->value() == m_tiles[i][j]->value()))
+            {
                 k--;
+            }
+            k++; //移动到前一个位置
+            if (k == i)
+                continue;
+            if (m_tiles[k][j]->isBlank()) {
+                moveTile(m_tiles[i][j], m_tiles[k][j]);
+            }
+            else {
+                mergeTile(m_tiles[i][j], m_tiles[k][j]);
             }
         }
     }
@@ -90,19 +117,22 @@ void GameController::moveDown()
     for (int j=0;j<4;j++) {
         for (int i=2;i>-1;i--) {
             int k = i;
-
-            while (k < 3 && !m_tiles[k][j]->isBlank() && !m_tiles[k+1][j]->isMerged()) {
-                if (m_tiles[k+1][j]->isBlank()) {
-                    moveTile(m_tiles[k][j], m_tiles[k+1][j]);
-                }
-                else if (m_tiles[k+1][j]->value() == m_tiles[k][j]->value()) {
-                    mergeTile(m_tiles[k][j], m_tiles[k+1][j]);
-                    break;
-                }
-                else {
-                    break;
-                }
+            if (m_tiles[i][j]->isBlank())
+                continue;
+            while (k <= 3
+                   && !m_tiles[k][j]->isMerged()
+                   && (m_tiles[k][j]->isBlank() || m_tiles[k][j]->value() == m_tiles[i][j]->value()))
+            {
                 k++;
+            }
+            k--; //移动到前一个位置
+            if (k == i)
+                continue;
+            if (m_tiles[k][j]->isBlank()) {
+                moveTile(m_tiles[i][j], m_tiles[k][j]);
+            }
+            else {
+                mergeTile(m_tiles[i][j], m_tiles[k][j]);
             }
         }
     }
@@ -176,7 +206,7 @@ void GameController::mergeTile(TileModel *a, TileModel *b) //a融合到b
     b->setValue(b->value()+1);
     a->setValue(0);
     b->setIsMerged(true);
-    emit moveAndMerge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
+    emit merge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
 }
 
 void GameController::moveTile(TileModel *a, TileModel *b) //a移动到b
@@ -185,7 +215,7 @@ void GameController::moveTile(TileModel *a, TileModel *b) //a移动到b
     b->setIsMerged(a->isMerged());
     a->setValue(0);
     a->setIsMerged(false);
-    emit moveAndMerge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
+    emit move(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
 }
 
 void GameController::clearFlag()

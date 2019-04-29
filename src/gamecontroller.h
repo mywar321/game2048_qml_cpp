@@ -24,8 +24,8 @@ public:
 signals:
     void gameIsOver();
     void generateNewTile(int i, int j, int value);
-    void moveAndMerge(int from, int to, int value);
-    //void move(int from, int to,int value);
+    void merge(int src, int dst, int value);
+    void move(int src, int dst,int value);
 public slots:
 
 private:

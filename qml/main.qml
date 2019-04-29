@@ -1,5 +1,6 @@
 ﻿import QtQuick 2.9
 import QtQuick.Window 2.2
+import QtQuick.Dialogs 1.2
 import com.game2048.GameController 1.0
 
 
@@ -12,25 +13,36 @@ Window {
     color: helper.myColors.bglight
 
     property int tileWidth : 425/4;
+    property var tileArray: [] //存储tiles对象的二维数组
 
+    function init() {
+        for (var i=0;i<4;i++) {
+            tileArray[i] = [];
+            for (var j=0;j<4;j++)
+                tileArray[i][j] = 0;
+        }
+    }
 
     GameController {
         id: controller
 
 
         onGameIsOver: {
-
+            console.log("game over")
         }
         onGenerateNewTile: {
-            tileGrid.display_tile(i,j,value);
+            tileGrid.createTile(i,j,value)
         }
 
-        onMoveAndMerge: {
-            tileGrid.animation_move(from, to);
-            tileGrid.erase(from);
-            tileGrid.display_tile(Math.floor(to/4),to%4,value);
+        onMove: {
+            tileGrid.moveTile(src,dst)
+        }
+
+        onMerge: {
+            tileGrid.mergeTile(src,dst,value)
         }
     }
+
 
     Rectangle {
         id: board
@@ -62,73 +74,56 @@ Window {
             y: 15;
             rows: 4; columns: 4; spacing: 15
 
-            function erase(i) {
-                cells.itemAt(i).tileText = "";
-                cells.itemAt(i).color = helper.myColors.bggray;
-            }
-            function display_tile(i, j, value) {
-                cells.itemAt(i*4+j).tileText = Math.pow(2,value).toString();
-                cells.itemAt(i*4+j).color = helper.tileColors[value-1];
-            }
-            function animation_move(from, to) {
+            //创建tile
+            function createTile(i,j,value) {
                 var tileComponent = Qt.createComponent("Tile.qml");
                 var aniTile = tileComponent.createObject(tileGrid,{
-                                                             "x": from%4 * (15+tileWidth),
-                                                             "y": Math.floor(from/4) * (15+tileWidth),
-                                                             "color": helper.myColors.bggray,
-                                                             "tileText": "32"
+                                                             "x": j * (15+tileWidth),
+                                                             "y": i * (15+tileWidth),
+                                                             "color": helper.getColor(value),
+                                                             "tileText": helper.getText(value)
                                                          });
-                aniTile.x = to%4 * (15+tileWidth);
-                aniTile.y = Math.floor(to/4) * (15+tileWidth);
-                aniTile.tileText = "4";
-                aniTile.destroyFlag = true;
+                aniTile.newTileAnimFlag = true;
+                tileArray[i][j] = aniTile;
             }
+            //移动， 将src处的tile移动到dst处
+            function moveTile(src, dst) {
+                //console.log("move"+ src + "to" +dst);
+                var i = Math.floor(src/4);
+                var j = src%4;
+                tileArray[i][j].x = cells.itemAt(dst).x;
+                tileArray[i][j].y = cells.itemAt(dst).y;
 
-            function animation_merge(from, to) {
-
+                var m = Math.floor(dst/4);
+                var n = dst%4;
+                tileArray[m][n] = tileArray[i][j];
+                tileArray[i][j] = 0;
             }
+            //合并,将src处的tile移动到dst处，改变dst处的tile的颜色和text，并且将src对象销毁
+            //TODO：合并动画
+            function mergeTile(src, dst, value) {
+                var i = Math.floor(src/4);
+                var j = src%4;
+                tileArray[i][j].destroyFlag = true;
+                tileArray[i][j].x = cells.itemAt(dst).x;
+                tileArray[i][j].y = cells.itemAt(dst).y;
 
+                i = Math.floor(dst/4);
+                j = dst%4;
+                tileArray[i][j].color = helper.getColor(value);
+                tileArray[i][j].tileText = helper.getText(value);
+            }
             Repeater {
                 id: cells
                 model: 16
-                Tile {
+                Rectangle {
                     width: tileWidth; height: tileWidth  //Rectangle.width - 5 * 15 / 4
                     radius: 3
-                    color: helper.myColors.bggray
-                    tileText: ""
+                    color: helper.myColors.bggray     
                 }
-
-
             }
-
-
-//            Repeater {
-//                id: tiles
-
-//                model: 16
-
-//                Tile {
-//                    width: tileWidth; height: tileWidth  //Rectangle.width - 5 * 15 / 4
-//                    radius: 3
-//                    color: helper.myColors.bggray
-
-//                    x: controller.tileList[index].y * (15+tileWidth)
-//                    y: controller.tileList[index].x * (15+tileWidth)
-//                    tileText: Math.pow(2,controller.tileList[index].value)
-
-
-//                }
-//            }
         }
-
-
-
-
     }
-
-
-
-
 
     Item {
         id: helper
@@ -146,11 +141,37 @@ Window {
             "#F65E3B", "#EDCF72", "#EDCC61", "#EDC850",
             "#EDC53F", "#EDC22E", "#3C3A32"]
 
+        property var arrForM0: {
+            var arr = [];
+            for (var i=0;i<16;i++)
+                arr[i] = Math.pow(2,i+1).toString();
+            return arr;
+        }
 
+        function getColor(val) {
+            var ret_color;
+            if (val < 1)
+                ret_color = myColors.valueOf("bggray");
+            else if (val >= 1 && val <= tileColors.length)
+                ret_color = tileColors[val-1];
+            else
+                ret_color = tileColors[tileColors.length-1];
+            return ret_color;
+        }
+
+        function getText(val) {
+            var arr = arrForM0;
+            if (val >= 1 && val <= tileColors.length)
+                return arr[val-1];
+            else
+                return ""
+
+        }
     }
 
 
     Component.onCompleted: {
+        init();
         controller.gameStart();
     }
 }

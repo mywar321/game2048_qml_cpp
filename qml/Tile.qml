@@ -3,9 +3,11 @@
 Rectangle {
     id: root
 
+
+
     property string tileText: "4"
-    property int moveAnimTime: 200
-    //property bool newTileAnimFlag:false
+    property int moveAnimTime: 100
+    property bool newTileAnimFlag:false
     property bool destroyFlag: false
     width: 425/4
     height: 425/4
@@ -22,24 +24,24 @@ Rectangle {
     }
 
 
-//    ParallelAnimation {
-//        running: newTileAnimFlag
-//        NumberAnimation {
-//            target: tileContainer
-//            property: "opacity"
-//            from: 0.0
-//            to: 1.0
-//            duration: newTileAnimTime
-//        }
+    ParallelAnimation {
+        running: newTileAnimFlag
+        NumberAnimation {
+            target: root
+            property: "opacity"
+            from: 0.0
+            to: 1.0
+            duration: 200
+        }
 
-//        ScaleAnimator {
-//            target: tileContainer
-//            from: 0
-//            to: 1
-//            duration: newTileAnimTime
-//            easing.type: Easing.OutQuad
-//        }
-//    }
+        ScaleAnimator {
+            target: root
+            from: 0
+            to: 1
+            duration: 250
+            easing.type: Easing.OutQuad
+        }
+    }
 
     Behavior on color {
         ColorAnimation {
@@ -71,5 +73,6 @@ Rectangle {
             }
         }
     }
+
 
 }

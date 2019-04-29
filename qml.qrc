@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>qml/main.qml</file>
         <file>qml/Tile.qml</file>
+        <file>qml/InfoDialog.qml</file>
     </qresource>
 </RCC>

@@ -20,6 +20,7 @@ Rectangle {
         text: qsTr(root.tileText)
         anchors.centerIn: parent
         font.pixelSize: 55
+
         color: "#776E62"
     }
 

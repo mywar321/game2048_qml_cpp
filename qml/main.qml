@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.9
 import QtQuick.Window 2.2
 import QtQuick.Dialogs 1.2
+import QtQuick.Controls 2.5
 import com.game2048.GameController 1.0
 
 
@@ -28,7 +29,8 @@ Window {
 
 
         onGameIsOver: {
-            console.log("game over")
+            console.log("game over");
+            dialog.visible = true;
         }
         onGenerateNewTile: {
             tileGrid.createTile(i,j,value)
@@ -42,8 +44,17 @@ Window {
             tileGrid.mergeTile(src,dst,value)
         }
     }
+    //游戏结束提示框
+    InfoDialog {
+        id: dialog
 
-
+        text: qsTr("Game Over")
+    }
+    //游戏方格面板
+    MouseArea {
+        anchors.fill: parent
+        onClicked: board.forceActiveFocus()
+    }
     Rectangle {
         id: board
         y: 170
@@ -169,9 +180,17 @@ Window {
         }
     }
 
+    Button {
+        anchors.left:parent.left;
+        anchors.top: parent.top;
 
+        text: "123"
+
+    }
     Component.onCompleted: {
         init();
         controller.gameStart();
+
+
     }
 }

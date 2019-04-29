@@ -62,16 +62,16 @@ void GameController::moveRight()
 void GameController::moveUp()
 {
     clearFlag();
-    for (int i=0;i<4;i++) {
-        for (int j=1;j<4;j++) {
-            int k = j;
-            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
-            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
-                if (m_tiles[i][k-1]->isBlank()) {
-                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+    for (int j=0;j<4;j++) {
+        for (int i=1;i<4;i++) {
+            int k = i;
+
+            while (k > 0 && !m_tiles[k][j]->isBlank() && !m_tiles[k-1][j]->isMerged()) {
+                if (m_tiles[k-1][j]->isBlank()) {
+                    moveTile(m_tiles[k][j], m_tiles[k-1][j]);
                 }
-                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
-                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+                else if (m_tiles[k-1][j]->value() == m_tiles[k][j]->value()) {
+                    mergeTile(m_tiles[k][j], m_tiles[k-1][j]);
                     break;
                 }
                 else {
@@ -87,22 +87,22 @@ void GameController::moveUp()
 void GameController::moveDown()
 {
     clearFlag();
-    for (int i=0;i<4;i++) {
-        for (int j=1;j<4;j++) {
-            int k = j;
-            //向左找寻，如果是空白就移动到空白处，如果相等则合并，否则退出循环
-            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
-                if (m_tiles[i][k-1]->isBlank()) {
-                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
+    for (int j=0;j<4;j++) {
+        for (int i=2;i>-1;i--) {
+            int k = i;
+
+            while (k < 3 && !m_tiles[k][j]->isBlank() && !m_tiles[k+1][j]->isMerged()) {
+                if (m_tiles[k+1][j]->isBlank()) {
+                    moveTile(m_tiles[k][j], m_tiles[k+1][j]);
                 }
-                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
-                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
+                else if (m_tiles[k+1][j]->value() == m_tiles[k][j]->value()) {
+                    mergeTile(m_tiles[k][j], m_tiles[k+1][j]);
                     break;
                 }
                 else {
                     break;
                 }
-                k--;
+                k++;
             }
         }
     }

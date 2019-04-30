@@ -31,7 +31,7 @@ Dialog {
         Button {
             text: 'OK'
             Layout.alignment: Qt.AlignHCenter
-            onClicked: root.visible = false
+            onClicked: root.accept()
             Layout.preferredHeight: 20
             font.family: "SimHei"
             font.pixelSize: 18
@@ -42,4 +42,6 @@ Dialog {
             Layout.bottomMargin: 15
         }
     }
+
+
 }

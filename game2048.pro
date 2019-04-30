@@ -18,10 +18,12 @@ SOURCES += \
     src/tilemodel.cpp \
     src/gamecontroller.cpp
 
-i_dont_know_why_it_works_well{
+qml{
 SOURCES += \
     qml/main.qml \
     qml/Tile.qml \
+    qml/InfoDialog.qml \
+    qml/ScoreLabel.qml
 }
 
 RESOURCES += qml.qrc

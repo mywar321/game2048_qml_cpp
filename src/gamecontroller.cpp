@@ -2,13 +2,20 @@
 #include "tilemodel.h"
 #include <QRandomGenerator>
 #include <QDebug>
-GameController::GameController(QObject *parent) : QObject(parent)
+#include <QSettings>
+GameController::GameController(QObject *parent)
+    : QObject(parent)
 {
-
+    m_settings = new QSettings("LEESS","GAME2048");
+    int max = m_settings->value("MAX_SCORE").toInt();
+    if (max > 0)
+        setMaxScore(max);
+    else
+        m_settings->setValue("MAX_SCORE",m_maxScore);
 }
 
 void GameController::moveLeft()
-{//TODO： 考虑边界问题
+{
     clearFlag();
     for (int i=0;i<4;i++) {
         for (int j=1;j<4;j++) {
@@ -33,24 +40,9 @@ void GameController::moveLeft()
                 mergeTile(m_tiles[i][j], m_tiles[i][k]);
             }
 
-//            while (k > 0 && !m_tiles[i][k]->isBlank() && !m_tiles[i][k-1]->isMerged()) {
-//                if (m_tiles[i][k-1]->isBlank()) {
-//                    moveTile(m_tiles[i][k], m_tiles[i][k-1]);
-//                }
-//                else if (m_tiles[i][k-1]->value() == m_tiles[i][k]->value()) {
-//                    mergeTile(m_tiles[i][k],m_tiles[i][k-1]);
-//                    break;
-//                }
-//                else {
-//                    break;
-//                }
-//                k--;
-//            }
         }
     }
     newTile();
-
-
 }
 
 void GameController::moveRight()
@@ -144,11 +136,12 @@ void GameController::gameStart()
     initTiles();
     newTile();
     newTile();
+    setScore(0);
 }
 
 void GameController::initTiles()
 {
-
+    m_tiles.clear();
     for (int i=0;i<4;i++) {
         QVector<TileModel *> tempV;
         for (int j=0;j<4;j++) {
@@ -206,6 +199,9 @@ void GameController::mergeTile(TileModel *a, TileModel *b) //a融合到b
     b->setValue(b->value()+1);
     a->setValue(0);
     b->setIsMerged(true);
+    setScore(m_score + pow(2, b->value()));
+    if (m_score > m_maxScore)
+        setMaxScore(m_score);
     emit merge(a->x()*4+a->y(),b->x()*4+b->y(),b->value());
 }
 
@@ -223,6 +219,29 @@ void GameController::clearFlag()
     for (int i=0;i<4;i++)
         for (int j=0;j<4;j++)
             m_tiles[i][j]->setIsMerged(false);
+}
+
+int GameController::maxScore() const
+{
+    return m_maxScore;
+}
+
+void GameController::setMaxScore(int maxScore)
+{
+    m_maxScore = maxScore;
+    emit maxScoreChanged();
+    m_settings->setValue("MAX_SCORE",m_maxScore);
+}
+
+int GameController::score() const
+{
+    return m_score;
+}
+
+void GameController::setScore(int score)
+{
+    m_score = score;
+    emit scoreChanged();
 }
 
 

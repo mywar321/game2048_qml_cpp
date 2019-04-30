@@ -50,7 +50,16 @@ Rectangle {
 
         }
     }
-
+    Behavior on opacity {
+        NumberAnimation {
+            duration: 100
+            onRunningChanged: {
+                if (!running && destroyFlag){
+                    root.destroy();
+                }
+            }
+        }
+    }
     Behavior on y {
         NumberAnimation {
             duration: moveAnimTime

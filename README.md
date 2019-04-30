@@ -12,3 +12,4 @@ qml部分参考了[github.com/xiaoyong/2048-Qt](https://github.com/xiaoyong/2048
 ![avatar](https://github.com/mywar321/game2048_qml_cpp/blob/master/res/screen_shot.png)
 
 
+![avatar](https://github.com/mywar321/game2048_qml_cpp/blob/master/res/ss2.png)

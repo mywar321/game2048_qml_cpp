@@ -46,10 +46,8 @@ Window {
         GameController {
             id: controller
 
-            onGameIsOver: {
-                console.log("GAME OVER");
-                dialog.open();
-            }
+            onGameIsOver: dialog.open()
+
             onGenerateNewTile: tileGrid.createTile(i,j,value)
 
             onMove: tileGrid.moveTile(src,dst)
@@ -62,10 +60,8 @@ Window {
             id: dialog
             text: qsTr("Game Over")
 
-            onAccepted: {
-                console.log("ok")
-                container.forceActiveFocus()
-            }
+            onAccepted: container.forceActiveFocus()
+
         }
         // 标题label
         Rectangle {

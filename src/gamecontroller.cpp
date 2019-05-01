@@ -33,16 +33,18 @@ void GameController::moveLeft()
             k++; //移动到前一个位置
             if (k == j)
                 continue;
-            if (m_tiles[i][k]->isBlank()) {
+            m_isMoved = true;
+            if (m_tiles[i][k]->isBlank()) {  
                 moveTile(m_tiles[i][j], m_tiles[i][k]);
             }
-            else {
+            else {   
                 mergeTile(m_tiles[i][j], m_tiles[i][k]);
             }
 
         }
     }
-    newTile();
+    if (m_isMoved)
+        newTile();
 }
 
 void GameController::moveRight()
@@ -63,6 +65,7 @@ void GameController::moveRight()
             k--; //移动到前一个位置
             if (k == j)
                 continue;
+            m_isMoved = true;
             if (m_tiles[i][k]->isBlank()) {
                 moveTile(m_tiles[i][j], m_tiles[i][k]);
             }
@@ -71,7 +74,8 @@ void GameController::moveRight()
             }
         }
     }
-    newTile();
+    if (m_isMoved)
+        newTile();
 }
 
 void GameController::moveUp()
@@ -92,6 +96,7 @@ void GameController::moveUp()
             k++; //移动到前一个位置
             if (k == i)
                 continue;
+            m_isMoved = true;
             if (m_tiles[k][j]->isBlank()) {
                 moveTile(m_tiles[i][j], m_tiles[k][j]);
             }
@@ -100,7 +105,8 @@ void GameController::moveUp()
             }
         }
     }
-    newTile();
+    if (m_isMoved)
+        newTile();
 }
 
 void GameController::moveDown()
@@ -120,6 +126,7 @@ void GameController::moveDown()
             k--; //移动到前一个位置
             if (k == i)
                 continue;
+            m_isMoved = true;
             if (m_tiles[k][j]->isBlank()) {
                 moveTile(m_tiles[i][j], m_tiles[k][j]);
             }
@@ -128,7 +135,8 @@ void GameController::moveDown()
             }
         }
     }
-    newTile();
+    if (m_isMoved)
+        newTile();
 }
 
 void GameController::gameStart()
@@ -219,6 +227,7 @@ void GameController::clearFlag()
     for (int i=0;i<4;i++)
         for (int j=0;j<4;j++)
             m_tiles[i][j]->setIsMerged(false);
+    m_isMoved = false;
 }
 
 int GameController::maxScore() const

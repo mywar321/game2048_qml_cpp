@@ -46,6 +46,7 @@ private:
     void moveTile(TileModel *a, TileModel *b);
     void clearFlag();
     QVector<QVector<TileModel *>> m_tiles;
+    bool m_isMoved = false;
     int m_score = 0; //2048游戏理论最大分 3933260
     int m_maxScore = 0;
     QSettings *m_settings;

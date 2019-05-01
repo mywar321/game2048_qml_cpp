@@ -148,7 +148,6 @@ Window {
             }
         }
         //游戏方格面板
-
         Rectangle {
             id: board
             y: 165
@@ -156,13 +155,7 @@ Window {
             height: 500
             color: helper.myColors.bgdark
             radius: 6
-            focus: false
-
             anchors.horizontalCenter: parent.horizontalCenter
-//            MouseArea {
-//                anchors.fill: parent
-//                onClicked: board.forceActiveFocus()
-//            }
 
             Grid {
                 id: tileGrid
@@ -203,11 +196,13 @@ Window {
                     tileArray[i][j].destroyFlag = true;
                     tileArray[i][j].x = cells.itemAt(dst).x;
                     tileArray[i][j].y = cells.itemAt(dst).y;
-
+                    tileArray[i][j].z = -1;
                     i = Math.floor(dst/4);
                     j = dst%4;
+
                     tileArray[i][j].color = helper.getColor(value);
                     tileArray[i][j].tileText = helper.getText(value);
+                    tileArray[i][j].doMerge();
                 }
                 function destroyAllTiles() {
                     for (var i=0;i<4;i++) {

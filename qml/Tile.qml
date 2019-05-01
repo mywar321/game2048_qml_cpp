@@ -7,7 +7,7 @@ Rectangle {
 
     property string tileText: "4"
     property int moveAnimTime: 100
-    property bool newTileAnimFlag:false
+    property bool newTileAnimFlag: false
     property bool destroyFlag: false
     width: 425/4
     height: 425/4
@@ -21,9 +21,8 @@ Rectangle {
         anchors.centerIn: parent
         font.pixelSize: 55
 
-        color: "#776E62"
+        color: "#776E62"   
     }
-
 
     ParallelAnimation {
         running: newTileAnimFlag
@@ -40,6 +39,27 @@ Rectangle {
             from: 0
             to: 1
             duration: 250
+            easing.type: Easing.OutQuad
+        }
+    }
+    function doMerge() {
+        mergeAnim.start();
+    }
+    SequentialAnimation {
+        id: mergeAnim
+        ScaleAnimator {
+            target: root
+            from: 1
+            to: 1.3
+            duration: 100
+            easing.type: Easing.OutQuad
+        }
+
+        ScaleAnimator {
+            target: root
+            from: 1.3
+            to: 1
+            duration: 100
             easing.type: Easing.OutQuad
         }
     }

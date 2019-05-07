@@ -7,6 +7,8 @@ import com.game2048.GameController 1.0
 Window {
 
     visible: true
+    x: Screen.width/2 - width/2
+    y: Screen.height/2 - height/2
     width: 550
     height: 680
     title: qsTr("2048")
@@ -46,7 +48,10 @@ Window {
         GameController {
             id: controller
 
-            onGameIsOver: dialog.open()
+            onGameIsOver: {
+                console.log("game over")
+                dialog.open()
+            }
 
             onGenerateNewTile: tileGrid.createTile(i,j,value)
 
@@ -74,10 +79,13 @@ Window {
             radius: 5
 
             Text {
-                anchors.centerIn: title
+                anchors.fill: title
                 text: "2048"
-                font.pixelSize: 65
+                font.pointSize: 100
                 font.bold: true
+                fontSizeMode: Text.Fit
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
                 color: "#ffffff"
             }
         }

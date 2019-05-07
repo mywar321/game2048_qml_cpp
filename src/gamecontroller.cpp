@@ -43,8 +43,7 @@ void GameController::moveLeft()
 
         }
     }
-    if (m_isMoved)
-        newTile();
+    checkGame();
 }
 
 void GameController::moveRight()
@@ -74,8 +73,7 @@ void GameController::moveRight()
             }
         }
     }
-    if (m_isMoved)
-        newTile();
+    checkGame();
 }
 
 void GameController::moveUp()
@@ -105,8 +103,7 @@ void GameController::moveUp()
             }
         }
     }
-    if (m_isMoved)
-        newTile();
+    checkGame();
 }
 
 void GameController::moveDown()
@@ -135,8 +132,7 @@ void GameController::moveDown()
             }
         }
     }
-    if (m_isMoved)
-        newTile();
+    checkGame();
 }
 
 void GameController::gameStart()
@@ -178,10 +174,7 @@ bool GameController::isGameOver()
 
 void GameController::newTile()
 {
-    if (isGameOver()) {
-        emit gameIsOver();
-        return;
-    }
+
     QVector<TileModel *>  zeros;
     for (int i=0;i<4;i++) {
         for (int j=0;j<4;j++) {
@@ -228,6 +221,16 @@ void GameController::clearFlag()
         for (int j=0;j<4;j++)
             m_tiles[i][j]->setIsMerged(false);
     m_isMoved = false;
+}
+
+void GameController::checkGame()
+{
+    if (isGameOver()) {
+        emit gameIsOver();
+        return;
+    }
+    if (m_isMoved)
+        newTile();
 }
 
 int GameController::maxScore() const
